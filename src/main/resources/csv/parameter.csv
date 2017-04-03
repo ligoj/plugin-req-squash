@@ -1,0 +1,5 @@
+id;owner.id;data;mandatory;type;mode;secured
+service:req:squash:url;service:req:squash;;true;TEXT;;
+service:req:squash:user;service:req:squash;;true;TEXT;;true
+service:req:squash:password;service:req:squash;;true;TEXT;;true
+service:req:squash:project;service:req:squash;;true;INTEGER;;

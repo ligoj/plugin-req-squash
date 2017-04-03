@@ -1,0 +1,4 @@
+id;name;refined.id;mode;uiClasses;tag;tagUiClasses
+service:req;Requirement;;LINK;fa fa-check-square-o;functional;fa fa-suitcase
+service:req:squash;Squash;service:req;LINK;;;
+service:req:squash:dig;Squash DIG;service:req:squash;LINK;;;

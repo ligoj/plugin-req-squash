@@ -1,0 +1,9 @@
+.masonry-container .node.service-req-squash.mode-th-list table.subscriptions th.features {
+	width: 52px;
+}
+.masonry-container .node.service-req-squash.mode-th-large table.subscriptions th.features {
+	width: 50px;
+}
+.masonry-container .node.service-req-squash table.subscriptions th.features {
+	width: 45px;
+}

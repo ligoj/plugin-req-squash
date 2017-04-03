@@ -1,0 +1,5 @@
+parameter.id;data;node.id;subscription.id!
+service:req:squash:url;http://localhost:8120;service:req:squash:dig;
+service:req:squash:password;junit;service:req:squash:dig;
+service:req:squash:user;secret;service:req:squash:dig;
+service:req:squash:project;1;;1

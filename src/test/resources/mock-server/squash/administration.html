@@ -1,0 +1,1621 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8" contentType="text/html; charset=utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 	
+		<title>Administration</title>
+		
+
+<link type="image/x-icon" rel="shortcut icon" href="/squash/images/favicon.ico"/>
+
+
+
+<link rel="stylesheet" type="text/css" href="/squash/styles-1.12.1.RELEASE/squash.core.css" /> 
+		
+		
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+var require = require || {};
+require.baseUrl = "/squash/scripts";
+	var squashtm = {};
+	squashtm.app = {
+		contextRoot: "/squash",
+		locale : "fr",
+		ckeditorLanguage: "fr",
+		menuBarConf: {
+    	}, 
+    	notificationConf: {
+  			infoTitle: "Info", 
+  			errorTitle: "Erreur"
+  		}
+	};
+	
+
+
+
+
+
+// -------------------- some shorthands for locale in .js---------------------------------------------
+squashtm.message = squashtm.message || {};
+squashtm.message.cancel = "Annuler ";
+squashtm.message.placeholder = "(Cliquer pour éditer...)";
+squashtm.message.confirm = "Confirmer";		
+squashtm.message.infoTitle = "Info";
+squashtm.message.errorTitle = "Erreur";	
+
+
+// ------------------- prefilled translator cache ---------------------------------------------------- 
+
+var _langcache = {	
+	'error.generic.label' : "Une erreur est survenue lors du traitement.",
+	'execution.execution-status.SETTLED' : "arbitré",
+	'execution.execution-status.UNTESTABLE' : "non testable",
+	'execution.execution-status.BLOCKED' : "bloqué",
+	'execution.execution-status.FAILURE' : "échec",
+	'execution.execution-status.SETTLED' : "arbitré",
+	'execution.execution-status.SUCCESS' : "succès",
+	'execution.execution-status.RUNNING' : "en cours",
+	'execution.execution-status.READY' : "à exécuter",
+	'execution.execution-status.WARNING' : "succès (+avertissement)",
+	'execution.execution-status.NOT_RUN' : "Non exécuté",
+	'execution.execution-status.NOT_FOUND' : "Introuvable",
+	'execution.execution-status.ERROR' : "erreur",
+	'label.Cancel' : "Annuler ",
+	'label.Ok' : "Ok",
+	'label.Confirm' : "Confirmer",
+	'rich-edit.language.value' : "fr",
+	'squashtm.locale' : "fr",
+	'squashtm.message.infoTitle' : "Info",
+	'squashtm.dateformat' : "dd/MM/yyyy HH:mm",
+	'squashtm.dateformat.iso' : "yyyy-MM-dd'T'HH:mm:ssZ",
+	'squashtm.dateformatShort.datepicker' : "dd/mm/yy"
+};
+
+squashtm.message.cache = _langcache;
+
+	
+</script>
+<script type="text/javascript" src="/squash/scripts/pubsub-boot.js"></script>
+
+  
+  
+<script  charset="utf-8" src="/squash/scripts/require-min.js"  data-main="legacy-ws-page"></script>
+  
+
+
+		
+
+
+<link rel="stylesheet" type="text/css" href="/squash/styles-1.12.1.RELEASE/squash.grey.css" /> 
+  
+    
+
+
+<link rel="stylesheet" type="text/css" href="/squash/styles-1.12.1.RELEASE/squash.core.override.css" /> 
+
+	</head>
+	<body>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="navigation" data-highlight="">
+	<div id="test_mgt_nav">
+		<a id="home-link" 		 	class="navigation-link navigation-home" 		href="/squash/home-workspace/"			title="Espace Home"></a>
+		<a id="requirement-link" 	class="navigation-link navigation-requirement"	href="/squash/requirement-workspace/"	title="Espace Exigences"></a>
+		<a id="test-case-link"	 	class="navigation-link navigation-test-case" 	href="/squash/test-case-workspace/"		title="Espace Cas de test"></a>
+		<a id="campaign-link"	 	class="navigation-link navigation-campaign"		href="/squash/campaign-workspace/"		title="Espace Campagnes"></a>
+		
+		<a id="bugtracker-link"	 	class="navigation-link navigation-bugtracker " 	title="Espace Bugtrackers"></a>
+		<ul class="not-displayed width:130px;">
+		
+			<li>
+				
+				
+				<a id="bugtracker-1" href="https://delivery.gfi.fr/jira" >Do not Use</a>			
+			</li>
+		
+			<li>
+				
+				
+				<a id="bugtracker-2" href="/squash/bugtracker/2/workspace" target="_blank">Jira</a>			
+			</li>
+		
+			<li>
+				
+				
+				<a id="bugtracker-3" href="/squash/bugtracker/3/workspace" target="_blank">Mantis RATP</a>			
+			</li>
+		
+			<li>
+				
+				
+				<a id="bugtracker-7" href="/squash/bugtracker/7/workspace" target="_blank">Mantis Préfecture de police IDF</a>			
+			</li>
+		
+		</ul>		
+		
+		<a id="report-link"	 	class="navigation-link navigation-report" 			href="/squash/report-workspace"			title="Espace Rapports"></a>
+	</div>
+	
+	<div id="nav_logo" class="vertical-logo"></div>
+</div>
+<script type="text/javascript">
+publish("load.navBar");
+</script>
+
+		
+		<div id="workspace">
+			<div id="workspace-title">
+				<div class="snap-left">
+					<h2 class="admin">
+      Administration
+    </h2>
+				</div>
+				<div class="snap-right">
+					<div class="unstyled notification-pane">
+						
+
+
+
+
+
+
+
+
+<div id="ajax-processing-indicator" class="ui-corner-all snap-right not-processing">
+	<div class="small-loading" ></div>
+	<span>Traitement en cours...</span>
+</div>
+<div id="generic-error-notification-area" class="ui-state-error ui-corner-all snap-right not-displayed ">
+	<span class="ui-icon ui-icon-alert icon"></span><span>Une erreur est survenue lors du traitement.&nbsp;
+  (<a href="#" id="show-generic-error-details" class="cursor-pointer">détails</a>)</span>
+</div>
+
+
+
+
+<div id="generic-error-dialog" class="not-displayed popup-dialog" title="Erreur">
+  <div>
+    
+
+
+
+ 
+  
+
+
+
+
+
+
+
+
+	
+<div class="display-table-row">
+    <div class="display-table-cell warning-cell">
+      <div class="generic-error-signal"></div>
+    </div>
+                   
+    <div class="generic-error-main display-table-cell" style="padding-top:20px"></div>
+    
+    
+</div>
+  </div>
+  <input type="button" value="Ok"/>  
+</div>
+
+
+<div id="generic-warning-dialog" class="not-displayed popup-dialog" title="Attention">
+  <div>
+    
+
+
+
+ 
+  
+
+
+
+
+
+
+
+
+	
+<div class="display-table-row">
+    <div class="display-table-cell warning-cell">
+      <div class="generic-warning-signal"></div>
+    </div>
+                   
+    <div class="generic-warning-main display-table-cell" style="padding-top:20px"></div>
+    
+    
+</div>
+  </div>
+  <input type="button" value="Ok"/>  
+</div>
+					
+					
+					</div><div class="main-menubar unstyled">
+						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<div style="display: inline-flex;">
+ 	 <input type="checkbox" id="menu-toggle-filter-ckbox" >
+  	 <div class="icon iconmargin menubarmargintop"><span class="ui-icon  ui-icon-volume-off rotateright"></span></div>
+ 	 <a id="menu-project-filter-link" style=" margin-top: 3px" href="#" class="">Filtre global</a>
+	</div>
+		
+
+  <div>
+    <div class="icon"><span class="ui-icon ui-icon-wrench"></span></div>
+    <a id="menu-administration-link" href="/squash/administration">
+      Administration
+    </a>
+  </div>
+
+
+<div>
+  <div class="icon"><span class="ui-icon ui-icon-person"></span></div>
+  <a id="menu-account-link" href="/squash/user-account">
+    Mon compte
+    &nbsp;(
+    fdaugan
+    )
+  </a>
+</div>
+
+
+
+  
+
+<div>
+  <div class="icon"><span class="ui-icon ui-icon-power"></span></div>
+  <a id="menu-logout-link" href="/squash/logout">
+    Déconnexion
+  </a>
+</div>
+
+
+
+
+<div id="project-filter-popup" class="project-picker popup-dialog not-displayed" style="display: none"
+  title="Projets affichés" data-url="/squash/global-filter/filter">
+  <div id="dialog-settings-filter-maincontent">
+    <div id="dialog-settings-filter-projectlist" class="project-filter-list dataTables_wrapper">
+     <span class="filter-warning not-displayed" >Des projets sélectionnés peuvent être masqués en raison du filtre.</span>
+         
+      <table>
+        <thead>
+          <tr>
+            <th width="25px" class="th-check ui-state-default"></th>
+            <th class="th-name ui-state-default">
+              Nom
+            </th>
+            <th class="th-type ui-state-default">
+              Étiquette
+            </th>
+          </tr>
+        </thead>
+        <tbody class="available-fields">
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-6" value="6"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Acoss - Portail KPI</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-102" value="102"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BAYER - AnimPlus</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-13" value="13"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BIDON</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-34" value="34"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BNPP - Accueil iPad</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-42" value="42"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BNPP - BDDF - Synergy</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-30" value="30"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BNPP - PSE Mobilité</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-38" value="38"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BNPP - TMA Carte Corporate</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-39" value="39"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">BNPP - TMA IHM</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-76" value="76"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Bayer - DemandeIT</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-21" value="21"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Bayer - Residue Tool</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-103" value="103"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Bayer - eCenter</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-91" value="91"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Bayer - iPOI</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-79" value="79"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CASA-PACTES – LYON</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-49" value="49"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CCUES - Aravis</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-20" value="20"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CHORUS 2.0</td>
+              <td class="project-label">Démonstration Projet Chorus</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-95" value="95"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CHU de Strasbourg - Chronotime</td>
+              <td class="project-label">CT CHU de Strasbourg</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-99" value="99"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CSO - GFIPROG - Astre RH</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-98" value="98"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CSO - GFIPROG - GECCO</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-66" value="66"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CSO - MAROC</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-65" value="65"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">CSO - Maroc</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-4" value="4"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Cardif - Migration VB</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-62" value="62"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Client - Orange-Cameroun-Centrafrique - CRM 360</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-63" value="63"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Client - Orange-Niger - CRM 360</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-9" value="9"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Cng - ECNi</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-43" value="43"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Conforama</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-19" value="19"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Conseil d'état - TMA Contentieux</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-22" value="22"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Crédit Agricole - CASA PALMA</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-5" value="5"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">DGAC - AGMP</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-11" value="11"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Europcar - CAR_TRANSFERT</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-28" value="28"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">GFI - Outils d'administration</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-10" value="10"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">GFI-Delivery-Template-01</td>
+              <td class="project-label">template</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-88" value="88"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">GROUPAMA – GC</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-78" value="78"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">GROUPAMA-UDM – LYON</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-71" value="71"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - CAPLA</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-33" value="33"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - Delivery - Recette</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-23" value="23"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - Delivery : Démo</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-3" value="3"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - Gilda</td>
+              <td class="project-label">GILDA</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-18" value="18"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - IODAS</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-97" value="97"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - Mutualisation TMA CSO</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-8" value="8"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - Outils BPR</td>
+              <td class="project-label">BPR</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-7" value="7"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - SSP GBCP</td>
+              <td class="project-label">Progiciel V2.5</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-14" value="14"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - SSP GPMD</td>
+              <td class="project-label">Gfi SSP GPMD</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-2" value="2"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Gfi - Test</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-70" value="70"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Groupama - Expertissimo</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-1" value="1"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Has - Sara</td>
+              <td class="project-label">TMA et Projet</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-90" value="90"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Hotelbeds - Booking</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-87" value="87"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Hotelbeds - Promocodes</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-51" value="51"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">I&O-RH - AGIL</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-54" value="54"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">I&O-RH - E-Jobs</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-53" value="53"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">I&O-RH - INCA</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-55" value="55"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">I&O-RH - JAD</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-52" value="52"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">I&O-RH - SAGA</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-81" value="81"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">IT-CE_PMM</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-82" value="82"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">ITCE – LYON</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-56" value="56"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">InspiHRe - GLR</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-57" value="57"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">InspiHRe - RRH</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-61" value="61"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">MAIF - CDS ETL</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-89" value="89"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">METRO - METRO</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-48" value="48"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">MLET - TMA ADS MEDEE</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-46" value="46"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">MLETR - MEDDE - Lot 5</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-47" value="47"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">MLETR - MEDDE - Lot 6</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-64" value="64"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Manuloc - Prométhée</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-72" value="72"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Matmut - AS NORD</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-29" value="29"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Orange - BSS Test</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-92" value="92"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Orange - CCIE</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-27" value="27"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Orange - Cameroun-Centrafrique</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-26" value="26"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Orange - Niger</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-44" value="44"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Orange - TMA MPA</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-83" value="83"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">PACIFICA – LYON</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-32" value="32"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">PM03 - Yves-Rocher</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-84" value="84"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Proto - Testing</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-77" value="77"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Préfecture de Police de Paris - COUPPOL</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-40" value="40"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Préfecture de Police de Paris - IML</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-93" value="93"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Préfecture de Police de Paris - PCSTRE</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-35" value="35"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Préfecture de Police de Paris - POC</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-50" value="50"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Préfecture de Police de Paris - RDV PC</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-60" value="60"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">RHCR8 - KALI</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-59" value="59"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">RHCR8 - Petites Annonces</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-58" value="58"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">RHCR8 - Sondages</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-86" value="86"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">SAFT Nersac Bordeaux - Gestor.Net</td>
+              <td class="project-label">GNet SAFT Nersac Bordeaux</td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-100" value="100"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">SPM - SAVEUR ODOO</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-101" value="101"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">SPM BO - VDD - ODOO</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-12" value="12"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">SRT</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-41" value="41"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Snecma - Indigo</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-85" value="85"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">THALES - Chorus2.0</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-68" value="68"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">TPAS-MPA - SIP G11R13</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-31" value="31"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - IMAGE</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-16" value="16"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - PALMACORE</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-108" value="108"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - PalmaDLJ</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-109" value="109"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - PalmaDTS</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-106" value="106"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - PalmaTSA</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-105" value="105"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - PalmaTUS</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-104" value="104"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Thales - Sagaone</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-94" value="94"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Toyota - One</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-17" value="17"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">Yves-Rocher - Easy</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-73" value="73"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">orange - SondOrange G6R0</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-75" value="75"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">orange-daie</td>
+              <td class="project-label"></td>
+            </tr>
+          
+            
+            <tr>
+              <td class="td-check" data-id="5">
+                <input type="checkbox" class="project-checkbox" id="project-checkbox-69" value="69"
+                  data-previous-checked="false"  />
+              </td>
+              <td class="project-name">orange-oine</td>
+              <td class="project-label"></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    <div id="dialog-settings-filter-controls" class="project-filter-controls">
+      <ul>
+        <li id="dialog-settings-filter-selectall" class="project-picker-selall cursor-pointer">
+          Sélectionner tout
+        </li>
+        <li id="dialog-settings-filter-deselectall" class="project-picker-deselall cursor-pointer">
+          Désélectionner tout
+        </li>
+        <li id="dialog-settings-filter-invertselect" class="project-picker-invsel cursor-pointer">
+          Inverser la sélection
+        </li>
+      </ul>
+    </div>
+    <div class="unsnap not-displayed"></div>
+  </div>
+  <div class="popup-dialog-buttonpane">
+    <input type="button" value="Confirmer" />
+    <input type="button" value="Annuler " />
+  </div>
+</div>
+<script type="text/javascript">
+	publish("load.projectFilter");
+</script>
+
+					</div>
+				
+                    <script type="text/javascript">
+                      publish("load.notification");
+                    </script>
+				</div>
+			</div>
+			
+			<div id="information-content" class="unstyled">
+      <div id="admin-pane">
+      <div id="admin-link-pane">
+        
+        <a href="/squash/administration/users/list" class="unstyledLink">
+          <span id="user-admin" class="admin-section-icon admin-user-icon"></span>
+          <span class="admin-section-label">Utilisateurs</span>
+        </a>
+        
+        
+        <a href="/squash/administration/projects" class="unstyledLink">
+          <span id="project-admin" class="admin-section-icon admin-project-icon"></span>
+          <span class="admin-section-label">Projets</span>
+        </a>
+        
+        
+        
+        <a href="/squash/administration/milestones" class="unstyledLink">
+          <span id="milestone-admin" class="admin-section-icon admin-milestone-icon"></span>
+          <span class="admin-section-label">Jalons</span>
+        </a>
+        
+        
+        
+        <a href="/squash/administration/custom-fields" class="unstyledLink">
+          <span id="custom-fields-admin" class="admin-section-icon admin-customfields-icon"></span>
+          <span class="admin-section-label">Champs personnalisés</span>
+        </a>
+        
+        
+        <a href="/squash/administration/info-lists" class="unstyledLink">
+          <span id="admin-info-list" class="admin-section-icon admin-infolist-icon"></span>
+          <span class="admin-section-label">Listes</span>
+        </a>
+        
+        
+        <a href="/squash/administration/bugtrackers" class="unstyledLink">
+          <span id="bug-tracker-admin" class="admin-section-icon admin-bugtracker-icon"></span>
+          <span class="admin-section-label">Bugtrackers</span>
+        </a>
+        <a href="/squash/administration/test-automation-servers" class="unstyledLink">
+          <span id="test-automation-servers-admin" class="admin-section-icon admin-test-automation-servers-icon"></span>
+          <span class="admin-section-label">Serveurs d'exécution automatisée</span>
+         </a>
+        <a href="/squash/administration/indexes" class="unstyledLink">
+          <span id="index-admin" class="admin-section-icon admin-index-icon"></span>
+          <span class="admin-section-label">Index</span>
+        </a>
+            <a id="fake-link" class="unstyledLink">
+       
+        </a>
+        
+      </div>
+      
+      <div id="admin-small-link-pane">  
+           <div id="admin-small-link-pane-table">  
+        
+             <a href="/squash/administration/login-message" class="unstyledLink ">
+          <span id="login-message-admin" class="admin-section-icon admin-msglogin-icon-small"></span>
+          <span class="admin-section-label">Changer le message de la Page de login</span>
+        </a>
+        <a href="/squash/administration/welcome-message" class="unstyledLink ">
+          <span id="welcome-message-admin" class="admin-section-icon admin-msghome-icon-small"></span>
+          <span class="admin-section-label">Changer le message de la Page d'accueil</span> 
+        </a>
+        
+           <a href="/squash/administration/config" class="unstyledLink ">
+          <span id="config-admin" class="admin-section-icon admin-config-icon-small"></span>
+          <span class="admin-section-label">Paramètres système</span> 
+        </a>
+         
+         </div> 
+      </div>
+      
+      <div id="admin-stats">
+        <div class="admin-stats-table">
+          <label>Version</label><span>1.12.1.RELEASE</span>
+        </div>
+        <div class="admin-stats-table">
+          <label>Statistiques</label>
+          <div>
+            <div>
+              <label>Projets</label><span>98</span>
+            </div>
+            <div>
+              <label>Utilisateurs</label><span>535</span>
+            </div>
+          </div>
+          <div>
+            <div>
+              <label>Exigences</label><span>12249</span>
+            </div>
+            <div>
+              <label>Cas de test</label><span>16517</span>
+            </div>
+          </div>
+          <div>
+            <div>
+              <label>Campagnes</label><span>749</span>
+            </div>
+            <div>
+              <label>Itérations</label><span>1966</span>
+            </div>
+            <div>
+              <label>Exécutions</label><span>16931</span>
+            </div>
+          </div>
+        </div>
+        <div class="admin-stats-table">
+          <label>Dernières indexations</label>
+          <div>
+            <div>
+              <label>Exigences</label>
+              <span id="req-last-index">
+                
+
+
+
+
+
+  
+  
+    
+    03/08/2016 10:15
+  
+
+
+              </span>
+            </div>
+            <div>
+              <label>Cas de test</label>
+              <span id="tc-last-index">
+                
+
+
+
+
+
+  
+  
+    
+    28/03/2016 22:25
+  
+
+
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+		</div>
+			
+	</body>
+	
+
+
+
+<script type="text/javascript">
+require([ "common" ], function() {
+  require(["jquery", "squash.KeyEventListener"], function($, KeyEventListener) {
+  	$(function(){
+  		squashtm.keyEventListener =  new KeyEventListener();
+  	});
+  });	
+});
+</script>
+	
+    <script type="text/javascript">
+    require([ "common" ], function() {
+      require([ "jquery", "squash.basicwidgets" ], function($, basicwidg){
+      	$(function() {
+    			basicwidg.init();
+        		$(".unstyled").fadeIn("fast", function() { $(this).removeClass("unstyled"); });
+        		$.ajaxSetup({
+        			scriptCharset : "utf-8"
+        		});
+      	});
+      });
+    });
+    </script>
+</html>
+
+
+
+</html>

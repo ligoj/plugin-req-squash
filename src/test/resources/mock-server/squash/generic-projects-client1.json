@@ -1,0 +1,4 @@
+{"iTotalRecords":3,"iTotalDisplayRecords":3,"sEcho":"6","sColumns":null,"aaData":[
+{"index":1,"automation":"non","bugtracker":"-","label":"","created-by":"admin","type":"&nbsp;","created-on":"15/04/2016 10:05","last-mod-on":"-","last-mod-by":null,"project-id":79,"name":"Client1 - P1","active":"oui","habilitation":"oui","raw-type":"project"},
+{"index":2,"automation":"non","bugtracker":"-","label":"","created-by":"admin","type":"&nbsp;","created-on":"18/09/2015 15:39","last-mod-on":"-","last-mod-by":null,"project-id":22,"name":"Client1 - P2","active":"oui","habilitation":"oui","raw-type":"project"},
+{"index":3,"automation":"non","bugtracker":"jira.rest","label":"","created-by":"admin","type":"&nbsp;","created-on":"22/07/2016 12:50","last-mod-on":"-","last-mod-by":null,"project-id":97,"name":"Client1 - P3","active":"oui","habilitation":"oui","raw-type":"project"}]}
