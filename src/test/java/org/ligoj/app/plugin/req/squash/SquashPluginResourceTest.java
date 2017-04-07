@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void linkNotFound() throws Exception {
+	public void linkNotFound() throws IOException {
 		thrown.expect(ValidationJsonException.class);
 		thrown.expect(MatcherUtil.validationMatcher("service:req:squash:project", "squash-project"));
 
@@ -235,7 +236,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void findAllByName() throws Exception {
+	public void findAllByName() throws IOException {
 		prepareMockProjectSearch();
 		httpServer.start();
 
@@ -246,7 +247,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void findAllByNameNoListing() throws Exception {
+	public void findAllByNameNoListing() throws IOException {
 		prepareMockAdmin();
 		httpServer.start();
 
@@ -255,7 +256,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void redirect() throws Exception {
+	public void redirect() throws IOException, URISyntaxException {
 		prepareMockAdmin();
 		httpServer.start();
 		final Response response = resource.redirect(subscription);

@@ -2,6 +2,7 @@ package org.ligoj.app.plugin.req.squash;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	public static final String KEY = URL.replace('/', ':').substring(1);
 
 	/**
-	 * Public server URL used to fetch the last available version of the product.
+	 * Public server URL used to fetch the last available version of the
+	 * product.
 	 */
 	@Value("${service-req-squash-server:https://api.bitbucket.org}")
 	private String publicServer;
@@ -89,7 +91,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	public static final String PARAMETER_URL = KEY + ":url";
 
 	@Override
-	public void link(final int subscription) throws Exception {
+	public void link(final int subscription) throws IOException {
 		final Map<String, String> parameters = subscriptionResource.getParameters(subscription);
 
 		// Validate the project settings
@@ -149,23 +151,29 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 */
 	private CurlRequest authenticate(final Map<String, String> parameters, final String url) {
 		return new CurlRequest(HttpMethod.POST, StringUtils.appendIfMissing(url, "/") + "login",
-				"username=" + parameters.get(PARAMETER_USER) + "&password=" + StringUtils.trimToEmpty(parameters.get(PARAMETER_PASSWORD)),
-				SquashCurlProcessor.LOGIN_CALLBACK, "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+				"username=" + parameters.get(PARAMETER_USER) + "&password="
+						+ StringUtils.trimToEmpty(parameters.get(PARAMETER_PASSWORD)),
+				SquashCurlProcessor.LOGIN_CALLBACK,
+				"Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 	}
 
 	/**
-	 * Return a Squash's resource. Return <code>null</code> when the resource is not found.
+	 * Return a Squash's resource. Return <code>null</code> when the resource is
+	 * not found.
 	 */
 	protected String getResource(final Map<String, String> parameters, final String resource) {
 		return getResource(new SquashCurlProcessor(), parameters, parameters.get(PARAMETER_URL), resource);
 	}
 
 	/**
-	 * Return a Squash's resource. Return <code>null</code> when the resource is not found.
+	 * Return a Squash's resource. Return <code>null</code> when the resource is
+	 * not found.
 	 */
-	protected String getResource(final CurlProcessor processor, final Map<String, String> parameters, final String url, final String resource) {
+	protected String getResource(final CurlProcessor processor, final Map<String, String> parameters, final String url,
+			final String resource) {
 		// Get the resource using the preempted authentication
-		final CurlRequest request = new CurlRequest(HttpMethod.GET, StringUtils.appendIfMissing(url, "/") + resource, null);
+		final CurlRequest request = new CurlRequest(HttpMethod.GET, StringUtils.appendIfMissing(url, "/") + resource,
+				null);
 		request.setSaveResponse(true);
 
 		// Execute the requests
@@ -175,22 +183,26 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Redirect to the home page of the linked project. Send a redirect code with the relevant cookies used by Squash TM
-	 * since there is no way to force the link to a desired project.
+	 * Redirect to the home page of the linked project. Send a redirect code
+	 * with the relevant cookies used by Squash TM since there is no way to
+	 * force the link to a desired project.
 	 */
 	@GET
 	@Path("redirect/{subscription:\\d+}")
-	public Response redirect(@PathParam("subscription") final int subscription) throws Exception {
+	public Response redirect(@PathParam("subscription") final int subscription) throws URISyntaxException {
 		final Map<String, String> parameters = subscriptionResource.getParameters(subscription);
-		final ResponseBuilder responseBuilder = Response.status(Status.FOUND)
-				.location(new URI(StringUtils.appendIfMissing(parameters.get(PARAMETER_URL), "/") + "requirement-workspace/"));
-		responseBuilder.cookie(new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null, null, -1, false),
-				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null, null, -1, false));
+		final ResponseBuilder responseBuilder = Response.status(Status.FOUND).location(
+				new URI(StringUtils.appendIfMissing(parameters.get(PARAMETER_URL), "/") + "requirement-workspace/"));
+		responseBuilder.cookie(
+				new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
+						null, -1, false),
+				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
+						null, -1, false));
 		return responseBuilder.build();
 	}
 
 	@Override
-	public String getVersion(final Map<String, String> parameters) throws Exception {
+	public String getVersion(final Map<String, String> parameters) {
 		// Get the version from the raw HTML of the administration page
 		return getVersion(getResource(parameters, "administration"));
 	}
@@ -213,11 +225,14 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 * Return all Squash TM projects without limit and an optional criteria.
 	 */
 	@SuppressWarnings("unchecked")
-	protected List<SquashProject> getProjectsDataTables(final Map<String, String> parameters, final String criteria) throws IOException {
-		return ((TableItem<SquashProject>) new ObjectMapper().readValue(StringUtils.defaultIfEmpty(
-				getResource(parameters,
-						"generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000" + (criteria == null ? "" : "&sSearch=" + criteria)),
-				"{\"aaData\":[]}"), VALUE_TYPE_REF)).getAaData();
+	protected List<SquashProject> getProjectsDataTables(final Map<String, String> parameters, final String criteria)
+			throws IOException {
+		return ((TableItem<SquashProject>) new ObjectMapper().readValue(
+				StringUtils.defaultIfEmpty(getResource(parameters,
+						"generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000"
+								+ (criteria == null ? "" : "&sSearch=" + criteria)),
+						"{\"aaData\":[]}"),
+				VALUE_TYPE_REF)).getAaData();
 	}
 
 	/**
@@ -228,7 +243,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Search the Squash TM the projects matching to the given criteria. Name only is considered.
+	 * Search the Squash TM the projects matching to the given criteria. Name
+	 * only is considered.
 	 * 
 	 * @param node
 	 *            the node to be tested with given parameters.
@@ -239,7 +255,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	@GET
 	@Path("{node}/{criteria}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public List<SquashProject> findAllByName(@PathParam("node") final String node, @PathParam("criteria") final String criteria) throws Exception {
+	public List<SquashProject> findAllByName(@PathParam("node") final String node,
+			@PathParam("criteria") final String criteria) throws IOException {
 
 		// Prepare the context, an ordered set of projects
 		final Map<String, String> parameters = nodeResource.getParametersAsMap(node);
@@ -254,23 +271,28 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	@Override
-	public String getLastVersion() throws Exception {
+	public String getLastVersion() throws IOException {
 		final String tagsAsJson = new CurlProcessor().get(
-				publicServer + "/2.0/repositories/nx/squashtest-tm/refs/tags?pagelen=1&q=name~%22squash-tm-%22&sort=-target.date",
+				publicServer
+						+ "/2.0/repositories/nx/squashtest-tm/refs/tags?pagelen=1&q=name~%22squash-tm-%22&sort=-target.date",
 				"Content-Type:application/json");
-		return StringUtils.removeStart(new ObjectMapper().readValue(StringUtils.defaultIfEmpty(tagsAsJson, "{\"values\":[]}"), BitBucketTags.class)
-				.getValues().stream().findFirst().map(BitBucketTag::getName).orElse("squash-tm-"), "squash-tm-");
+		return StringUtils.removeStart(
+				new ObjectMapper()
+						.readValue(StringUtils.defaultIfEmpty(tagsAsJson, "{\"values\":[]}"), BitBucketTags.class)
+						.getValues().stream().findFirst().map(BitBucketTag::getName).orElse("squash-tm-"),
+				"squash-tm-");
 	}
 
 	@Override
-	public SubscriptionStatusWithData checkSubscriptionStatus(final String node, final Map<String, String> parameters) throws Exception {
+	public SubscriptionStatusWithData checkSubscriptionStatus(final String node, final Map<String, String> parameters)
+			throws IOException {
 		final SubscriptionStatusWithData nodeStatusWithData = new SubscriptionStatusWithData();
 		nodeStatusWithData.put("project", validateProject(parameters));
 		return nodeStatusWithData;
 	}
 
 	@Override
-	public boolean checkStatus(final String node, final Map<String, String> parameters) throws Exception {
+	public boolean checkStatus(final String node, final Map<String, String> parameters) {
 		// Status is UP <=> Administration access is UP
 		validateAdminAccess(parameters);
 		return true;
