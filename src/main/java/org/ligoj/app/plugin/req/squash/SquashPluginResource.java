@@ -186,6 +186,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 * Redirect to the home page of the linked project. Send a redirect code
 	 * with the relevant cookies used by Squash TM since there is no way to
 	 * force the link to a desired project.
+	 * 
+	 * @return The response redirection to go to the right project.
 	 */
 	@GET
 	@Path("redirect/{subscription:\\d+}")
@@ -194,10 +196,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 		final ResponseBuilder responseBuilder = Response.status(Status.FOUND).location(
 				new URI(StringUtils.appendIfMissing(parameters.get(PARAMETER_URL), "/") + "requirement-workspace/"));
 		responseBuilder.cookie(
-				new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
-						null, -1, false),
-				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
-						null, -1, false));
+				new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null, null, -1, false),
+				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null, null, -1, false));
 		return responseBuilder.build();
 	}
 
@@ -284,7 +284,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	@Override
-	public SubscriptionStatusWithData checkSubscriptionStatus(final String node, final Map<String, String> parameters)
+	public SubscriptionStatusWithData checkSubscriptionStatus(final Map<String, String> parameters)
 			throws IOException {
 		final SubscriptionStatusWithData nodeStatusWithData = new SubscriptionStatusWithData();
 		nodeStatusWithData.put("project", validateProject(parameters));
@@ -292,7 +292,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	@Override
-	public boolean checkStatus(final String node, final Map<String, String> parameters) {
+	public boolean checkStatus(final Map<String, String> parameters) {
 		// Status is UP <=> Administration access is UP
 		validateAdminAccess(parameters);
 		return true;
