@@ -259,7 +259,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 			@PathParam("criteria") final String criteria) throws IOException {
 
 		// Prepare the context, an ordered set of projects
-		final Map<String, String> parameters = nodeResource.getParametersAsMap(node);
+		final Map<String, String> parameters = pvResource.getNodeParameters(node);
 
 		// Get the projects and parse them
 		return getProjectsDataTables(parameters, criteria);
