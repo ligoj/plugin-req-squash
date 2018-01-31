@@ -16,10 +16,10 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.http.HttpStatus;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.app.AbstractServerTest;
 import org.ligoj.app.MatcherUtil;
 import org.ligoj.app.api.SubscriptionStatusWithData;
@@ -35,12 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link SquashPluginResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
@@ -56,11 +56,10 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 
 	protected int subscription;
 
-	@Before
+	@BeforeEach
 	public void prepareData() throws IOException {
 		// Only with Spring context
-		persistEntities("csv",
-				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class },
+		persistEntities("csv", new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class },
 				StandardCharsets.UTF_8.name());
 		this.subscription = getSubscription("gStack");
 
@@ -87,12 +86,12 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	@Test
 	public void getVersion() throws Exception {
 		prepareMockAdmin();
-		Assert.assertEquals("1.12.1.RELEASE", resource.getVersion(subscription));
+		Assertions.assertEquals("1.12.1.RELEASE", resource.getVersion(subscription));
 	}
 
 	@Test
 	public void getLastVersion() throws Exception {
-		Assert.assertTrue(resource.getLastVersion().length() > 4);
+		Assertions.assertTrue(resource.getLastVersion().length() > 4);
 	}
 
 	@Test
@@ -107,22 +106,19 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 
 	@Test
 	public void linkNotFound() throws IOException {
-		thrown.expect(ValidationJsonException.class);
-		thrown.expect(MatcherUtil.validationMatcher("service:req:squash:project", "squash-project"));
-
 		prepareMockProject();
 		httpServer.start();
 
 		parameterValueRepository.findAllBySubscription(subscription).stream()
-				.filter(v -> v.getParameter().getId().equals(SquashPluginResource.KEY + ":project")).findFirst().get()
-				.setData("0");
+				.filter(v -> v.getParameter().getId().equals(SquashPluginResource.KEY + ":project")).findFirst().get().setData("0");
 		em.flush();
 		em.clear();
 
 		// Invoke create for an already created entity, since for now, there is
 		// nothing but validation pour SquashTM
-		resource.link(this.subscription);
-		// Nothing to validate for now...
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.link(this.subscription);
+		}), "service:req:squash:project", "squash-project");
 	}
 
 	@Test
@@ -130,7 +126,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		prepareMockProject();
 		final SubscriptionStatusWithData nodeStatusWithData = resource
 				.checkSubscriptionStatus(subscriptionResource.getParametersNoCheck(subscription));
-		Assert.assertTrue(nodeStatusWithData.getStatus().isUp());
+		Assertions.assertTrue(nodeStatusWithData.getStatus().isUp());
 	}
 
 	private void prepareMockProject() throws IOException {
@@ -138,31 +134,26 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
 		// Login
-		httpServer.stubFor(post(urlEqualTo("/login")).willReturn(
-				aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
+		httpServer.stubFor(post(urlEqualTo("/login"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
 
 		// Project json
 		httpServer.stubFor(get(urlEqualTo("/generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/squash/generic-projects.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toString(
+						new ClassPathResource("mock-server/squash/generic-projects.json").getInputStream(), StandardCharsets.UTF_8))));
 		httpServer.start();
 	}
 
 	private void prepareMockProjectSearch() throws IOException {
 		// Login
-		httpServer.stubFor(post(urlEqualTo("/login")).willReturn(
-				aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
+		httpServer.stubFor(post(urlEqualTo("/login"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
 
 		// Project json
-		httpServer.stubFor(
-				get(urlEqualTo("/generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000&sSearch=client1"))
-						.willReturn(
-								aResponse().withStatus(HttpStatus.SC_OK)
-										.withBody(IOUtils.toString(new ClassPathResource(
-												"mock-server/squash/generic-projects-client1.json").getInputStream(),
-												StandardCharsets.UTF_8))));
+		httpServer.stubFor(get(urlEqualTo("/generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000&sSearch=client1"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(
+						IOUtils.toString(new ClassPathResource("mock-server/squash/generic-projects-client1.json").getInputStream(),
+								StandardCharsets.UTF_8))));
 		httpServer.start();
 	}
 
@@ -171,68 +162,64 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
 		// Login
-		httpServer.stubFor(post(urlEqualTo("/login")).willReturn(
-				aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
+		httpServer.stubFor(post(urlEqualTo("/login"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
 
 		// Administration page for version
-		httpServer.stubFor(get(urlEqualTo("/administration")).willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-				.withBody(IOUtils.toString(
-						new ClassPathResource("mock-server/squash/administration.html").getInputStream(),
-						StandardCharsets.UTF_8))));
+		httpServer.stubFor(get(urlEqualTo("/administration")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils
+				.toString(new ClassPathResource("mock-server/squash/administration.html").getInputStream(), StandardCharsets.UTF_8))));
 		httpServer.start();
 	}
 
 	@Test
 	public void checkStatus() throws Exception {
 		prepareMockAdmin();
-		Assert.assertTrue(resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription)));
+		Assertions.assertTrue(resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription)));
 	}
 
-	@Test(expected = NotImplementedException.class)
+	@Test
 	public void create() throws Exception {
-		resource.create(0);
+		Assertions.assertThrows(NotImplementedException.class, () -> {
+			resource.create(0);
+		});
 	}
 
 	@Test
 	public void checkStatusAuthenticationFailed() throws Exception {
-		thrown.expect(ValidationJsonException.class);
-		thrown.expect(MatcherUtil.validationMatcher(SquashPluginResource.KEY + ":user", "squash-login"));
-		// Main entry
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
 		// Login
-		httpServer.stubFor(
-				post(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_FORBIDDEN).withBody("")));
+		httpServer.stubFor(post(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_FORBIDDEN).withBody("")));
 		httpServer.start();
-		resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
+		}), SquashPluginResource.KEY + ":user", "squash-login");
 	}
 
 	@Test
 	public void checkStatusNotAdmin() throws Exception {
-		thrown.expect(ValidationJsonException.class);
-		thrown.expect(MatcherUtil.validationMatcher(SquashPluginResource.KEY + ":user", "squash-admin"));
 		// Main entry
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
 		// Login
-		httpServer.stubFor(post(urlEqualTo("/login")).willReturn(
-				aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
+		httpServer.stubFor(post(urlEqualTo("/login"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY).withBody("").withHeader("location", "some")));
 
 		// Administration page for version
-		httpServer.stubFor(get(urlEqualTo("/administration"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_FORBIDDEN).withBody("")));
+		httpServer.stubFor(get(urlEqualTo("/administration")).willReturn(aResponse().withStatus(HttpStatus.SC_FORBIDDEN).withBody("")));
 		httpServer.start();
-		resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
+		}), SquashPluginResource.KEY + ":user", "squash-admin");
 	}
 
 	@Test
 	public void checkStatusInvalidIndex() throws Exception {
-		thrown.expect(ValidationJsonException.class);
-		thrown.expect(MatcherUtil.validationMatcher(SquashPluginResource.KEY + ":url", "squash-connection"));
-		httpServer.stubFor(
-				get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)));
+		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)));
 		httpServer.start();
-		resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
+			resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
+		}), "pkey", "unknown-id");
 	}
 
 	@Test
@@ -241,9 +228,9 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.start();
 
 		final List<SquashProject> projects = resource.findAllByName("service:req:squash:dig", "client1");
-		Assert.assertEquals(3, projects.size());
-		Assert.assertEquals(79, projects.get(0).getId().intValue());
-		Assert.assertEquals("Client1 - P1", projects.get(0).getName());
+		Assertions.assertEquals(3, projects.size());
+		Assertions.assertEquals(79, projects.get(0).getId().intValue());
+		Assertions.assertEquals("Client1 - P1", projects.get(0).getName());
 	}
 
 	@Test
@@ -252,7 +239,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.start();
 
 		final List<SquashProject> projects = resource.findAllByName("service:req:squash:dig", "client1");
-		Assert.assertEquals(0, projects.size());
+		Assertions.assertEquals(0, projects.size());
 	}
 
 	@Test
@@ -260,10 +247,10 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		prepareMockAdmin();
 		httpServer.start();
 		final Response response = resource.redirect(subscription);
-		Assert.assertEquals(302, response.getStatus());
-		Assert.assertEquals("http://localhost:8120/requirement-workspace/", response.getHeaderString("location"));
-		Assert.assertEquals("%23RequirementLibrary-1", response.getCookies().get("jstree_open").getValue());
-		Assert.assertEquals("%23RequirementLibrary-1", response.getCookies().get("jstree_select").getValue());
+		Assertions.assertEquals(302, response.getStatus());
+		Assertions.assertEquals("http://localhost:8120/requirement-workspace/", response.getHeaderString("location"));
+		Assertions.assertEquals("%23RequirementLibrary-1", response.getCookies().get("jstree_open").getValue());
+		Assertions.assertEquals("%23RequirementLibrary-1", response.getCookies().get("jstree_select").getValue());
 	}
 
 }

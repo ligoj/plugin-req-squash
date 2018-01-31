@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Produces(MediaType.APPLICATION_JSON)
 public class SquashPluginResource extends AbstractToolPluginResource implements ReqServicePlugin {
 
-	private static final TypeReference<TableItem<SquashProject>> VALUE_TYPE_REF = new TypeReference<TableItem<SquashProject>>() {
+	private static final TypeReference<TableItem<SquashProject>> VALUE_TYPE_REF = new TypeReference<>() {
 		// Nothing to override
 	};
 
