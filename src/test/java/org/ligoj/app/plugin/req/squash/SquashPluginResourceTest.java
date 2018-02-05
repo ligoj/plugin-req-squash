@@ -178,14 +178,14 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void create() throws Exception {
+	public void create() {
 		Assertions.assertThrows(NotImplementedException.class, () -> {
 			resource.create(0);
 		});
 	}
 
 	@Test
-	public void checkStatusAuthenticationFailed() throws Exception {
+	public void checkStatusAuthenticationFailed() {
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
 		// Login
@@ -197,7 +197,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkStatusNotAdmin() throws Exception {
+	public void checkStatusNotAdmin() {
 		// Main entry
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
@@ -214,7 +214,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkStatusInvalidIndex() throws Exception {
+	public void checkStatusInvalidIndex() {
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)));
 		httpServer.start();
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
