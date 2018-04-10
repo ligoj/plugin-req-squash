@@ -1,3 +1,6 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.app.plugin.req.squash;
 
 import org.ligoj.app.resource.plugin.CurlProcessor;
