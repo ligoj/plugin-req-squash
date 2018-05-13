@@ -67,8 +67,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	public static final String KEY = URL.replace('/', ':').substring(1);
 
 	/**
-	 * Public server URL used to fetch the last available version of the
-	 * product.
+	 * Public server URL used to fetch the last available version of the product.
 	 */
 	@Value("${service-req-squash-server:https://api.bitbucket.org}")
 	private String publicServer;
@@ -103,7 +102,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	/**
 	 * Validate the project connectivity.
-	 * 
+	 *
 	 * @param parameters
 	 *            the project parameters.
 	 * @return project details.
@@ -123,7 +122,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	/**
 	 * Validate the basic REST connectivity to Squash.
-	 * 
+	 *
 	 * @param parameters
 	 *            the server parameters.
 	 * @return the detected Squash version.
@@ -135,18 +134,19 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 		CurlProcessor.validateAndClose(url + "login", PARAMETER_URL, "squash-connection");
 
 		// Authentication request
-		final SquashCurlProcessor processor = new SquashCurlProcessor();
-		if (!processor.process(authenticate(parameters, url))) {
-			throw new ValidationJsonException(PARAMETER_USER, "squash-login");
-		}
+		try (SquashCurlProcessor curl = new SquashCurlProcessor()) {
+			if (!curl.process(authenticate(parameters, url))) {
+				throw new ValidationJsonException(PARAMETER_USER, "squash-login");
+			}
 
-		// Check the user has enough rights to access to the administration page
-		final CurlRequest admin = new CurlRequest("GET", url + "administration", null);
-		admin.setSaveResponse(true);
-		if (!processor.process(admin)) {
-			throw new ValidationJsonException(PARAMETER_USER, "squash-admin");
+			// Check the user has enough rights to access to the administration page
+			final CurlRequest admin = new CurlRequest("GET", url + "administration", null);
+			admin.setSaveResponse(true);
+			if (!curl.process(admin)) {
+				throw new ValidationJsonException(PARAMETER_USER, "squash-admin");
+			}
+			return getVersion(admin.getResponse());
 		}
-		return getVersion(admin.getResponse());
 	}
 
 	/**
@@ -161,16 +161,14 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Return a Squash's resource. Return <code>null</code> when the resource is
-	 * not found.
+	 * Return a Squash's resource. Return <code>null</code> when the resource is not found.
 	 */
 	protected String getResource(final Map<String, String> parameters, final String resource) {
 		return getResource(new SquashCurlProcessor(), parameters, parameters.get(PARAMETER_URL), resource);
 	}
 
 	/**
-	 * Return a Squash's resource. Return <code>null</code> when the resource is
-	 * not found.
+	 * Return a Squash's resource. Return <code>null</code> when the resource is not found.
 	 */
 	protected String getResource(final CurlProcessor processor, final Map<String, String> parameters, final String url,
 			final String resource) {
@@ -186,10 +184,9 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Redirect to the home page of the linked project. Send a redirect code
-	 * with the relevant cookies used by Squash TM since there is no way to
-	 * force the link to a desired project.
-	 * 
+	 * Redirect to the home page of the linked project. Send a redirect code with the relevant cookies used by Squash TM
+	 * since there is no way to force the link to a desired project.
+	 *
 	 * @return The response redirection to go to the right project.
 	 */
 	@GET
@@ -199,8 +196,10 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 		final ResponseBuilder responseBuilder = Response.status(Status.FOUND).location(
 				new URI(StringUtils.appendIfMissing(parameters.get(PARAMETER_URL), "/") + "requirement-workspace/"));
 		responseBuilder.cookie(
-				new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null, null, -1, false),
-				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null, null, -1, false));
+				new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
+						null, -1, false),
+				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
+						null, -1, false));
 		return responseBuilder.build();
 	}
 
@@ -246,9 +245,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Search the Squash TM the projects matching to the given criteria. Name
-	 * only is considered.
-	 * 
+	 * Search the Squash TM the projects matching to the given criteria. Name only is considered.
+	 *
 	 * @param node
 	 *            the node to be tested with given parameters.
 	 * @param criteria
@@ -275,20 +273,20 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	@Override
 	public String getLastVersion() throws IOException {
-		final String tagsAsJson = new CurlProcessor().get(
-				publicServer
-						+ "/2.0/repositories/nx/squashtest-tm/refs/tags?pagelen=1&q=name~%22squash-tm-%22&sort=-target.date",
-				"Content-Type:application/json");
-		return StringUtils.removeStart(
-				new ObjectMapper()
-						.readValue(StringUtils.defaultIfEmpty(tagsAsJson, "{\"values\":[]}"), BitBucketTags.class)
-						.getValues().stream().findFirst().map(BitBucketTag::getName).orElse("squash-tm-"),
-				"squash-tm-");
+		try (CurlProcessor curl = new CurlProcessor()) {
+			final String tagsAsJson = curl.get(publicServer
+					+ "/2.0/repositories/nx/squashtest-tm/refs/tags?pagelen=1&q=name~%22squash-tm-%22&sort=-target.date",
+					"Content-Type:application/json");
+			return StringUtils.removeStart(
+					new ObjectMapper()
+							.readValue(StringUtils.defaultIfEmpty(tagsAsJson, "{\"values\":[]}"), BitBucketTags.class)
+							.getValues().stream().findFirst().map(BitBucketTag::getName).orElse("squash-tm-"),
+					"squash-tm-");
+		}
 	}
 
 	@Override
-	public SubscriptionStatusWithData checkSubscriptionStatus(final Map<String, String> parameters)
-			throws IOException {
+	public SubscriptionStatusWithData checkSubscriptionStatus(final Map<String, String> parameters) throws IOException {
 		final SubscriptionStatusWithData nodeStatusWithData = new SubscriptionStatusWithData();
 		nodeStatusWithData.put("project", validateProject(parameters));
 		return nodeStatusWithData;
