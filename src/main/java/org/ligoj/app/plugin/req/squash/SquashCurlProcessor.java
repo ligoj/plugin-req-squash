@@ -3,9 +3,9 @@
  */
 package org.ligoj.app.plugin.req.squash;
 
-import org.ligoj.app.resource.plugin.CurlProcessor;
-import org.ligoj.app.resource.plugin.HttpResponseCallback;
-import org.ligoj.app.resource.plugin.OnlyRedirectHttpResponseCallback;
+import org.ligoj.bootstrap.core.curl.CurlProcessor;
+import org.ligoj.bootstrap.core.curl.HttpResponseCallback;
+import org.ligoj.bootstrap.core.curl.OnlyRedirectHttpResponseCallback;
 
 /**
  * SonarQube processor.
