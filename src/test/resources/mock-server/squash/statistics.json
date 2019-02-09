@@ -1,5 +1,5 @@
 {
-	"@doc" : "https://delivery.gfi.fr/squash/test-case-browser/statistics?libraries=17&nodes=&_time=1475751150063",
+	"@doc" : "https://delivery.ligoj.fr/squash/test-case-browser/statistics?libraries=17&nodes=&_time=1475751150063",
 	"boundRequirementsStatistics": {
 		"zeroRequirements": 2526,
 		"oneRequirement": 505,
