@@ -16,6 +16,11 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 public class SquashProject extends NamedBean<Integer> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Project identifier.
 	 */
 	@JsonProperty(value = "project-id", access = Access.WRITE_ONLY)
