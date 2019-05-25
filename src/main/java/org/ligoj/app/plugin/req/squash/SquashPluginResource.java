@@ -103,9 +103,9 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	/**
 	 * Validate the project connectivity.
 	 *
-	 * @param parameters
-	 *            the project parameters.
+	 * @param parameters the project parameters.
 	 * @return project details.
+	 * @throws IOException When the Squash TM content cannot be parsed.
 	 */
 	protected SquashProject validateProject(final Map<String, String> parameters) throws IOException {
 		// Get project's configuration
@@ -123,8 +123,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	/**
 	 * Validate the basic REST connectivity to Squash.
 	 *
-	 * @param parameters
-	 *            the server parameters.
+	 * @param parameters the server parameters.
 	 * @return the detected Squash version.
 	 */
 	protected String validateAdminAccess(final Map<String, String> parameters) {
@@ -161,14 +160,26 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Return a Squash's resource. Return <code>null</code> when the resource is not found.
+	 * Return a Squash's resource. Return <code>null</code> when the resource is not
+	 * found.
+	 * 
+	 * @param parameters The subscription parameters.
+	 * @param resource   The requested resource URL
+	 * @return The resource content.
 	 */
 	protected String getResource(final Map<String, String> parameters, final String resource) {
 		return getResource(new SquashCurlProcessor(), parameters, parameters.get(PARAMETER_URL), resource);
 	}
 
 	/**
-	 * Return a Squash's resource. Return <code>null</code> when the resource is not found.
+	 * Return a Squash's resource. Return <code>null</code> when the resource is not
+	 * found.
+	 * 
+	 * @param processor  The CURL processor.
+	 * @param parameters The subscription parameters.
+	 * @param url        The base URL.
+	 * @param resource   The requested resource URL
+	 * @return The resource content.
 	 */
 	protected String getResource(final CurlProcessor processor, final Map<String, String> parameters, final String url,
 			final String resource) {
@@ -184,10 +195,14 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	}
 
 	/**
-	 * Redirect to the home page of the linked project. Send a redirect code with the relevant cookies used by Squash TM
-	 * since there is no way to force the link to a desired project.
+	 * Redirect to the home page of the linked project. Send a redirect code with
+	 * the relevant cookies used by Squash TM since there is no way to force the
+	 * link to a desired project.
+	 * 
+	 * @param subscription The subscription identifier.
 	 *
 	 * @return The response redirection to go to the right project.
+	 * @throws URISyntaxException When the Squash TM base URL is malformed.
 	 */
 	@GET
 	@Path("redirect/{subscription:\\d+}")
@@ -218,6 +233,10 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	/**
 	 * Return all Squash TM projects without limit.
+	 * 
+	 * @param parameters The subscription parameters.
+	 * @return The resource content.
+	 * @throws IOException When the Squash TM content cannot be parsed.
 	 */
 	protected List<SquashProject> getProjects(final Map<String, String> parameters) throws IOException {
 		return getProjectsDataTables(parameters, null);
@@ -225,6 +244,11 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	/**
 	 * Return all Squash TM projects without limit and an optional criteria.
+	 * 
+	 * @param parameters The subscription parameters.
+	 * @param criteria   The criteria (plain text) for the lookup.
+	 * @return The resource content.
+	 * @throws IOException When the Squash TM content cannot be parsed.
 	 */
 	@SuppressWarnings("unchecked")
 	protected List<SquashProject> getProjectsDataTables(final Map<String, String> parameters, final String criteria)
@@ -239,19 +263,24 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	/**
 	 * Return Squash project from its identifier.
+	 * 
+	 * @param parameters The subscription parameters.
+	 * @param id         The Squash TM project identifier.
+	 * @return The resource content.
+	 * @throws IOException When the Squash TM content cannot be parsed.
 	 */
 	protected SquashProject getProject(final Map<String, String> parameters, final int id) throws IOException {
 		return getProjects(parameters).stream().filter(project -> project.getId().equals(id)).findFirst().orElse(null);
 	}
 
 	/**
-	 * Search the Squash TM the projects matching to the given criteria. Name only is considered.
+	 * Search the Squash TM the projects matching to the given criteria. Name only
+	 * is considered.
 	 *
-	 * @param node
-	 *            the node to be tested with given parameters.
-	 * @param criteria
-	 *            the search criteria.
+	 * @param node     the node to be tested with given parameters.
+	 * @param criteria the search criteria.
 	 * @return project names matching the criteria.
+	 * @throws IOException When the Squash TM content cannot be parsed.
 	 */
 	@GET
 	@Path("{node}/{criteria}")

@@ -62,7 +62,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	protected int subscription;
 
 	@BeforeEach
-	public void prepareData() throws IOException {
+	void prepareData() throws IOException {
 		// Only with Spring context
 		persistEntities("csv",
 				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class },
@@ -76,12 +76,12 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	/**
 	 * Return the subscription identifier of gStack. Assumes there is only one subscription for a service.
 	 */
-	protected Integer getSubscription(final String project) {
+	private Integer getSubscription(final String project) {
 		return getSubscription(project, SquashPluginResource.KEY);
 	}
 
 	@Test
-	public void delete() throws Exception {
+	void delete() throws Exception {
 		resource.delete(subscription, false);
 		em.flush();
 		em.clear();
@@ -89,18 +89,18 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void getVersion() throws Exception {
+	void getVersion() throws Exception {
 		prepareMockAdmin();
 		Assertions.assertEquals("1.12.1.RELEASE", resource.getVersion(subscription));
 	}
 
 	@Test
-	public void getLastVersion() throws Exception {
+	void getLastVersion() throws Exception {
 		Assertions.assertTrue(resource.getLastVersion().length() > 4);
 	}
 
 	@Test
-	public void link() throws Exception {
+	void link() throws Exception {
 		prepareMockProject();
 		httpServer.start();
 
@@ -110,7 +110,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void linkNotFound() throws IOException {
+	void linkNotFound() throws IOException {
 		prepareMockProject();
 		httpServer.start();
 
@@ -128,7 +128,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkSubscriptionStatus() throws Exception {
+	void checkSubscriptionStatus() throws Exception {
 		prepareMockProject();
 		final SubscriptionStatusWithData nodeStatusWithData = resource
 				.checkSubscriptionStatus(subscriptionResource.getParametersNoCheck(subscription));
@@ -136,7 +136,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkSubscriptionStatusInvalidIndex() throws IOException {
+	void checkSubscriptionStatusInvalidIndex() throws IOException {
 		final Map<String, String> parameters = new HashMap<>(subscriptionResource.getParametersNoCheck(subscription));
 		parameters.put("service:req:squash:project", "999");
 		prepareMockProject();
@@ -195,20 +195,20 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkStatus() throws Exception {
+	void checkStatus() throws Exception {
 		prepareMockAdmin();
 		Assertions.assertTrue(resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription)));
 	}
 
 	@Test
-	public void create() {
+	void create() {
 		Assertions.assertThrows(NotImplementedException.class, () -> {
 			resource.create(0);
 		});
 	}
 
 	@Test
-	public void checkStatusAuthenticationFailed() {
+	void checkStatusAuthenticationFailed() {
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
 		// Login
@@ -221,7 +221,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkStatusNotAdmin() {
+	void checkStatusNotAdmin() {
 		// Main entry
 		httpServer.stubFor(get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("")));
 
@@ -239,7 +239,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void checkStatusInvalidUrl() {
+	void checkStatusInvalidUrl() {
 		httpServer.stubFor(
 				get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)));
 		httpServer.start();
@@ -249,7 +249,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void findAllByName() throws IOException {
+	void findAllByName() throws IOException {
 		prepareMockProjectSearch();
 		httpServer.start();
 
@@ -260,7 +260,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void findAllByNameNoListing() throws IOException {
+	void findAllByNameNoListing() throws IOException {
 		prepareMockAdmin();
 		httpServer.start();
 
@@ -269,7 +269,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	}
 
 	@Test
-	public void redirect() throws IOException, URISyntaxException {
+	void redirect() throws IOException, URISyntaxException {
 		prepareMockAdmin();
 		httpServer.start();
 		final Response response = resource.redirect(subscription);
