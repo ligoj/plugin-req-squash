@@ -15,7 +15,7 @@ define(function () {
 		 * Render Build Jenkins data.
 		 */
 		renderFeatures: function (subscription) {
-			var result = current.$super('renderServicelink')('home', 'rest/service/req/squash/redirect/' + subscription.id, 'service:req:squash:project', null, ' target="_blank"');
+			var result = current.$super('renderServiceLink')('home', 'rest/service/req/squash/redirect/' + subscription.id, 'service:req:squash:project', null, ' target="_blank"');
 			// Help
 			result += current.$super('renderServiceHelpLink')(subscription.parameters, 'service:req:help');
 			return result;
