@@ -250,7 +250,6 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 * @return The resource content.
 	 * @throws IOException When the Squash TM content cannot be parsed.
 	 */
-	@SuppressWarnings("unchecked")
 	protected List<SquashProject> getProjectsDataTables(final Map<String, String> parameters, final String criteria)
 			throws IOException {
 		return ((TableItem<SquashProject>) new ObjectMapper().readValue(
