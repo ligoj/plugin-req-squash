@@ -252,12 +252,12 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 */
 	protected List<SquashProject> getProjectsDataTables(final Map<String, String> parameters, final String criteria)
 			throws IOException {
-		return ((TableItem<SquashProject>) new ObjectMapper().readValue(
+		return new ObjectMapper().readValue(
 				StringUtils.defaultIfEmpty(getResource(parameters,
 						"generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000"
 								+ (criteria == null ? "" : "&sSearch=" + criteria)),
 						"{\"aaData\":[]}"),
-				VALUE_TYPE_REF)).getAaData();
+				VALUE_TYPE_REF).getAaData();
 	}
 
 	/**
