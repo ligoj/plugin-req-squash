@@ -15,12 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transactional;
-import javax.ws.rs.core.Response;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,16 +65,16 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	void prepareData() throws IOException {
 		// Only with Spring context
 		persistEntities("csv",
-				new Class[] { Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class },
-				StandardCharsets.UTF_8.name());
-		this.subscription = getSubscription("gStack");
+				new Class[]{Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class},
+				StandardCharsets.UTF_8);
+		this.subscription = getSubscription("Jupiter");
 
 		// Coverage only
-		resource.getKey();
+		Assertions.assertEquals("service:req:squash", resource.getKey());
 	}
 
 	/**
-	 * Return the subscription identifier of gStack. Assumes there is only one subscription for a service.
+	 * Return the subscription identifier of Jupiter. Assumes there is only one subscription for a service.
 	 */
 	private Integer getSubscription(final String project) {
 		return getSubscription(project, SquashPluginResource.KEY);
@@ -122,9 +122,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 
 		// Invoke create for an already created entity, since for now, there is
 		// nothing but validation pour SquashTM
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.link(this.subscription);
-		}), "service:req:squash:project", "squash-project");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.link(this.subscription)), "service:req:squash:project", "squash-project");
 	}
 
 	@Test
@@ -140,9 +138,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		final Map<String, String> parameters = new HashMap<>(subscriptionResource.getParametersNoCheck(subscription));
 		parameters.put("service:req:squash:project", "999");
 		prepareMockProject();
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.checkSubscriptionStatus(parameters);
-		}), "service:req:squash:project", "squash-project");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.checkSubscriptionStatus(parameters)), "service:req:squash:project", "squash-project");
 	}
 
 	private void prepareMockProject() throws IOException {
@@ -173,7 +169,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 						.willReturn(
 								aResponse().withStatus(HttpStatus.SC_OK)
 										.withBody(IOUtils.toString(new ClassPathResource(
-												"mock-server/squash/generic-projects-client1.json").getInputStream(),
+														"mock-server/squash/generic-projects-client1.json").getInputStream(),
 												StandardCharsets.UTF_8))));
 		httpServer.start();
 	}
@@ -202,9 +198,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 
 	@Test
 	void create() {
-		Assertions.assertThrows(NotImplementedException.class, () -> {
-			resource.create(0);
-		});
+		Assertions.assertThrows(NotImplementedException.class, () -> resource.create(0));
 	}
 
 	@Test
@@ -215,9 +209,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.stubFor(
 				post(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_FORBIDDEN).withBody("")));
 		httpServer.start();
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
-		}), SquashPluginResource.KEY + ":user", "squash-login");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription))), SquashPluginResource.KEY + ":user", "squash-login");
 	}
 
 	@Test
@@ -233,9 +225,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.stubFor(get(urlEqualTo("/administration"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_FORBIDDEN).withBody("")));
 		httpServer.start();
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
-		}), SquashPluginResource.KEY + ":user", "squash-admin");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription))), SquashPluginResource.KEY + ":user", "squash-admin");
 	}
 
 	@Test
@@ -243,9 +233,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		httpServer.stubFor(
 				get(urlEqualTo("/login")).willReturn(aResponse().withStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR)));
 		httpServer.start();
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription));
-		}), "service:req:squash:url", "squash-connection");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.checkStatus(subscriptionResource.getParametersNoCheck(subscription))), "service:req:squash:url", "squash-connection");
 	}
 
 	@Test
@@ -264,7 +252,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 		prepareMockAdmin();
 		httpServer.start();
 
-		final List<SquashProject> projects = resource.findAllByName("service:req:squash:dig", "client1");
+		final var projects = resource.findAllByName("service:req:squash:dig", "client1");
 		Assertions.assertEquals(0, projects.size());
 	}
 
