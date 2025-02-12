@@ -65,7 +65,7 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 	void prepareData() throws IOException {
 		// Only with Spring context
 		persistEntities("csv",
-				new Class[]{Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class},
+				new Class<?>[]{Node.class, Parameter.class, Project.class, Subscription.class, ParameterValue.class},
 				StandardCharsets.UTF_8);
 		this.subscription = getSubscription("Jupiter");
 
@@ -243,8 +243,8 @@ public class SquashPluginResourceTest extends AbstractServerTest {
 
 		final List<SquashProject> projects = resource.findAllByName("service:req:squash:dig", "client1");
 		Assertions.assertEquals(3, projects.size());
-		Assertions.assertEquals(79, projects.get(0).getId().intValue());
-		Assertions.assertEquals("Client1 - P1", projects.get(0).getName());
+		Assertions.assertEquals(79, projects.getFirst().getId().intValue());
+		Assertions.assertEquals("Client1 - P1", projects.getFirst().getName());
 	}
 
 	@Test
