@@ -3,26 +3,17 @@
  */
 package org.ligoj.app.plugin.req.squash;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HttpMethod;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.app.api.SubscriptionStatusWithData;
 import org.ligoj.app.plugin.req.ReqResource;
 import org.ligoj.app.plugin.req.ReqServicePlugin;
@@ -35,8 +26,11 @@ import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Squash TM resource.
@@ -109,7 +103,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 */
 	protected SquashProject validateProject(final Map<String, String> parameters) throws IOException {
 		// Get project's configuration
-		final int id = Integer.parseInt(ObjectUtils.defaultIfNull(parameters.get(PARAMETER_PROJECT), "0"));
+		final int id = Integer.parseInt(ObjectUtils.getIfNull(parameters.get(PARAMETER_PROJECT), "0"));
 		final SquashProject result = getProject(parameters, id);
 
 		if (result == null) {
@@ -127,7 +121,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 * @return the detected Squash version.
 	 */
 	protected String validateAdminAccess(final Map<String, String> parameters) {
-		final String url = StringUtils.appendIfMissing(parameters.get(PARAMETER_URL), "/");
+		final String url = Strings.CS.appendIfMissing(parameters.get(PARAMETER_URL), "/");
 
 		// Check access
 		CurlProcessor.validateAndClose(url + "login", PARAMETER_URL, "squash-connection");
@@ -152,7 +146,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 * Create and return an authenticate request.
 	 */
 	private CurlRequest authenticate(final Map<String, String> parameters, final String url) {
-		return new CurlRequest(HttpMethod.POST, StringUtils.appendIfMissing(url, "/") + "login",
+		return new CurlRequest(HttpMethod.POST, Strings.CS.appendIfMissing(url, "/") + "login",
 				"username=" + parameters.get(PARAMETER_USER) + "&password="
 						+ StringUtils.trimToEmpty(parameters.get(PARAMETER_PASSWORD)),
 				SquashCurlProcessor.LOGIN_CALLBACK,
@@ -162,7 +156,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	/**
 	 * Return a Squash's resource. Return <code>null</code> when the resource is not
 	 * found.
-	 * 
+	 *
 	 * @param parameters The subscription parameters.
 	 * @param resource   The requested resource URL
 	 * @return The resource content.
@@ -174,7 +168,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	/**
 	 * Return a Squash's resource. Return <code>null</code> when the resource is not
 	 * found.
-	 * 
+	 *
 	 * @param processor  The CURL processor.
 	 * @param parameters The subscription parameters.
 	 * @param url        The base URL.
@@ -184,7 +178,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	protected String getResource(final CurlProcessor processor, final Map<String, String> parameters, final String url,
 			final String resource) {
 		// Get the resource using the preempted authentication
-		final CurlRequest request = new CurlRequest(HttpMethod.GET, StringUtils.appendIfMissing(url, "/") + resource,
+		final CurlRequest request = new CurlRequest(HttpMethod.GET, Strings.CS.appendIfMissing(url, "/") + resource,
 				null);
 		request.setSaveResponse(true);
 
@@ -198,9 +192,8 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	 * Redirect to the home page of the linked project. Send a redirect code with
 	 * the relevant cookies used by Squash TM since there is no way to force the
 	 * link to a desired project.
-	 * 
-	 * @param subscription The subscription identifier.
 	 *
+	 * @param subscription The subscription identifier.
 	 * @return The response redirection to go to the right project.
 	 * @throws URISyntaxException When the Squash TM base URL is malformed.
 	 */
@@ -209,12 +202,16 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	public Response redirect(@PathParam("subscription") final int subscription) throws URISyntaxException {
 		final Map<String, String> parameters = subscriptionResource.getParameters(subscription);
 		final ResponseBuilder responseBuilder = Response.status(Status.FOUND).location(
-				new URI(StringUtils.appendIfMissing(parameters.get(PARAMETER_URL), "/") + "requirement-workspace/"));
+				new URI(Strings.CS.appendIfMissing(parameters.get(PARAMETER_URL), "/") + "requirement-workspace/"));
 		responseBuilder.cookie(
-				new NewCookie("jstree_open", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
-						null, -1, false),
-				new NewCookie("jstree_select", "%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT), "/", null,
-						null, -1, false));
+				new NewCookie.Builder("jstree_open")
+						.value("%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT))
+						.path("/")
+						.build(),
+				new NewCookie.Builder("jstree_select")
+						.value("%23RequirementLibrary-" + parameters.get(PARAMETER_PROJECT))
+						.path("/")
+						.build());
 		return responseBuilder.build();
 	}
 
@@ -226,14 +223,14 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	private String getVersion(final String adminPage) {
 		// Get the version from the raw HTML of the administration page
-		final String page = ObjectUtils.defaultIfNull(adminPage, VERSION_TAG_START + VERSION_TAG_END);
+		final String page = ObjectUtils.getIfNull(adminPage, VERSION_TAG_START + VERSION_TAG_END);
 		final int versionIndex = page.indexOf(VERSION_TAG_START) + VERSION_TAG_START.length();
 		return page.substring(versionIndex, page.indexOf(VERSION_TAG_END, versionIndex));
 	}
 
 	/**
 	 * Return all Squash TM projects without limit.
-	 * 
+	 *
 	 * @param parameters The subscription parameters.
 	 * @return The resource content.
 	 * @throws IOException When the Squash TM content cannot be parsed.
@@ -244,7 +241,7 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 
 	/**
 	 * Return all Squash TM projects without limit and an optional criteria.
-	 * 
+	 *
 	 * @param parameters The subscription parameters.
 	 * @param criteria   The criteria (plain text) for the lookup.
 	 * @return The resource content.
@@ -254,15 +251,15 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 			throws IOException {
 		return new ObjectMapper().readValue(
 				StringUtils.defaultIfEmpty(getResource(parameters,
-						"generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000"
-								+ (criteria == null ? "" : "&sSearch=" + criteria)),
+								"generic-projects?sEcho=4&iDisplayStart=0&iDisplayLength=100000"
+										+ (criteria == null ? "" : "&sSearch=" + criteria)),
 						"{\"aaData\":[]}"),
 				VALUE_TYPE_REF).getAaData();
 	}
 
 	/**
 	 * Return Squash project from its identifier.
-	 * 
+	 *
 	 * @param parameters The subscription parameters.
 	 * @param id         The Squash TM project identifier.
 	 * @return The resource content.
@@ -303,9 +300,9 @@ public class SquashPluginResource extends AbstractToolPluginResource implements 
 	public String getLastVersion() throws IOException {
 		try (CurlProcessor curl = new CurlProcessor()) {
 			final String tagsAsJson = curl.get(publicServer
-					+ "/2.0/repositories/nx/squashtest-tm/refs/tags?pagelen=1&q=name~%22squash-tm-%22&sort=-target.date",
+							+ "/2.0/repositories/nx/squashtest-tm/refs/tags?pagelen=1&q=name~%22squash-tm-%22&sort=-target.date",
 					"Content-Type:application/json");
-			return StringUtils.removeStart(
+			return Strings.CS.removeStart(
 					new ObjectMapper()
 							.readValue(StringUtils.defaultIfEmpty(tagsAsJson, "{\"values\":[]}"), BitBucketTags.class)
 							.getValues().stream().findFirst().map(BitBucketTag::getName).orElse("squash-tm-"),
