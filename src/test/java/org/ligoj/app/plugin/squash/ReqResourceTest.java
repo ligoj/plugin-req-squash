@@ -52,7 +52,7 @@ public class ReqResourceTest extends AbstractAppTest {
 				StandardCharsets.UTF_8);
 
 		// Coverage only
-		Assertions.assertEquals("service:req:squash", resource.getKey());
+		Assertions.assertEquals("service:req", resource.getKey());
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class ReqResourceTest extends AbstractAppTest {
 
 		final Subscription subscription = new Subscription();
 		subscription.setProject(project);
-		subscription.setNode(nodeRepository.findOneExpected("service:req"));
+		subscription.setNode(nodeRepository.findOneExpected("service:req:squash:dig"));
 		em.persist(subscription);
 
 		Assertions.assertEquals(1, subscriptionRepository.findAllByProject(project.getId()).size());
@@ -80,15 +80,15 @@ public class ReqResourceTest extends AbstractAppTest {
 
 	@Test
 	void create() throws Exception {
-		final Project project = new Project();
+		final var project = new Project();
 		project.setName("TEST");
 		project.setPkey("test");
 		em.persist(project);
 		em.flush();
 
-		final Subscription subscription = new Subscription();
+		final var subscription = new Subscription();
 		subscription.setProject(project);
-		subscription.setNode(nodeRepository.findOneExpected("service:req"));
+		subscription.setNode(nodeRepository.findOneExpected("service:req:squash:dig"));
 		em.persist(subscription);
 		em.flush();
 		em.clear();
