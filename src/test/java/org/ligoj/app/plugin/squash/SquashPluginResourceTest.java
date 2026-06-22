@@ -1,23 +1,10 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.req.squash;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package org.ligoj.app.plugin.squash;
 
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.hc.core5.http.HttpStatus;
@@ -28,11 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.app.AbstractServerTest;
 import org.ligoj.app.api.SubscriptionStatusWithData;
 import org.ligoj.app.dao.ParameterValueRepository;
-import org.ligoj.app.model.Node;
-import org.ligoj.app.model.Parameter;
-import org.ligoj.app.model.ParameterValue;
-import org.ligoj.app.model.Project;
-import org.ligoj.app.model.Subscription;
+import org.ligoj.app.model.*;
 import org.ligoj.app.resource.subscription.SubscriptionResource;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
@@ -41,6 +24,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 /**
  * Test class of {@link SquashPluginResource}

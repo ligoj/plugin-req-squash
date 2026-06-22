@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.req.squash;
+package org.ligoj.app.plugin.squash;
 
 import org.ligoj.bootstrap.core.NamedBean;
 

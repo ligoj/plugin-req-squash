@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.req.squash;
+package org.ligoj.app.plugin.squash;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
